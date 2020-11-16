@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 목적별로 mapper를 나누어서 사용 -->
+<mapper namespace="mapper.usersMapper"> <!-- mapper와 query의 식별자를 구해야함 매퍼이름(식별자).이름(쿼리이름)-->
+					  <!-- 파일이름과 매퍼이름은 별개지만 , mapper식별자 이름은 보통 파일이름과 똑같이 만든다 -->
+	
+	<select id="getBBSRead" parameterType="Integer" resultType="model.Bbs">
+		select * from bbs where seqno = #{seqno}
+	</select>
+	
+	<select id="getBBSCount" resultType="Integer">
+	 	select count(*) from bbs
+	</select>				  
+		
+	<select id="getBBS" resultType="model.Bbs" parameterType="Integer">
+	select seqno, title, id, bbs_date from
+		(select rownum rn, seqno, title, id, bbs_date <!-- rownum -->
+		from (select * from bbs order by seqno desc)) <!-- 최근 글이 가장 위에 떠야하므로 역순정렬 -->
+	where (rn > ((#{no}-1)*5) and (rn <![CDATA[<]]> ((#{no}-1)*5)+6))
+	</select>
+	
+	<select id="getMaxSeqno" resultType="Integer"><!-- 최대값 1개이므로 resultType도 단일값 -->
+		select max(seqno) from bbs
+	</select>
+	<insert id="putBBS" parameterType="model.Bbs"> <!-- insert는 결과가 필요없음 넣어주고 넣어주고 넣어주고 -->
+		insert into bbs values(#{seqno},#{title},#{content},#{id},#{bbs_date})
+	</insert>
+	
+	
+	<select id="selectMember" parameterType="String" 
+							resultType="model.Custom_info"> 							
+	<!-- parameter가 복수 값일 때는 클래스로 넘겨야함 -->
+	<!-- 쿼리이름 (목적은 로그인) --> <!-- 서블릿에 mapper.usersMapper.selectMapper -->	
+	<!-- parameterType이 1건일때는 타입을, 여러개일때는 ★dto의 클래스를 입력 -->
+	<!-- parameterType은 조회, resultType은 결과 값이 저장됨 -->
+	<!-- *은 모든 데이터를 조회하는 것  : 조회결과가 복수가 될 것이므로 resultType에 클래스를 입력해야함 -->
+		select * from custom_info
+		where id = #{id} <!-- #{} mybatis 문법 : 파라미터 <=여기서는 계정 값이 들어감 -->
+	</select>
+	
+	
+	<insert id="putMember" parameterType="model.Custom_info">
+		insert into custom_info values (#{id}, #{password}, #{name},
+				 #{addr}, #{email}, #{gender}, #{job})	
+	</insert>
+	
+	<select id="getItemID" parameterType="String" resultType="Integer">
+		select count(*) from selling_item where code = #{code}
+	</select>
+	
+	<insert id="putItem" parameterType="model.Item">
+		insert into selling_item values (#{code},#{name},#{price},#{info},#{origin})
+	</insert>
+	
+	<select id="getItemCount" resultType="Integer">
+		select count(*) from selling_item
+	</select>
+	<select id="getItems" resultType="model.Item" parameterType="Integer">
+		select code, name, price, info, origin from
+			(select rownum rn, code, name, price, info, origin from selling_item)
+		where rn > (#{pagenum} - 1)* 5
+		and rn <![CDATA[<]]> (((#{pagenum} - 1)* 5)+ 6)
+	</select>
+	
+	<!-- 상품 가격과 이름을 찾음 -->
+	<select id="getItemNamePrice" parameterType="String" resultType="model.CartItem">
+		select name, price from selling_item where code = #{code} 
+	</select>
+	
+	<select id="getMaxSeqnoCart" resultType="Integer">
+		select max(seqno) from my_cart
+	</select>
+	
+	<insert id="putCart" parameterType="model.CartItem">
+		insert into my_cart values(#{seqno},#{code},#{num},#{id})
+	</insert>
+	
+	<select id="getCart" parameterType="String" resultType="model.CartItem">
+		select * from my_cart where id = #{id}
+	</select>
+	
+	<delete id="deleteCart" parameterType="String">
+		delete from my_cart where id = #{id}
+	</delete>
+	
+	<!-- 매퍼 추가 -->
+	
+	<select id="getPassword" resultType="String"
+		parameterType="String">
+		select password from custom_info where id = #{id}
+	</select>
+	
+	<select id="getIdCnt" resultType="Integer"
+		parameterType="String">
+		select count(*) as cnt from custom_info
+		where id = #{id}
+	</select>
+	
+	
+	<select id="getItem" parameterType="String" 
+		resultType="model.Item">
+		select * from selling_item where code = #{code}
+	</select>
+	
+	<!-- update 매퍼 추가 -->
+	<update id="updateCart" parameterType="model.CartItem">
+		update my_cart set num = #{num}
+		where code = #{code} and id = #{id}
+	</update>
+</mapper>
+
+
+
+
