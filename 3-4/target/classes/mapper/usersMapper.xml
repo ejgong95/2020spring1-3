@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 목적별로 mapper를 나누어서 사용 -->
+<mapper namespace="mapper.usersMapper"> <!-- mapper와 query의 식별자를 구해야함 매퍼이름(식별자).이름(쿼리이름)-->
+					  <!-- 파일이름과 매퍼이름은 별개지만 , mapper식별자 이름은 보통 파일이름과 똑같이 만든다 -->
+	<select id="getUser" parameterType="model.User" resultType="model.User">
+		select user_id as userId, password, user_name as userName, address,
+			email, job, birthday
+		from user_account
+		where user_id = #{userId} and password = #{password}
+	</select>
+	
+	<insert id="putUser" parameterType="model.User">
+		insert into user_account values(#{userId},#{userName},#{password},
+		#{address},#{email},#{job},#{birthday})
+	</insert>
+	
+</mapper>
+
+
+
+
