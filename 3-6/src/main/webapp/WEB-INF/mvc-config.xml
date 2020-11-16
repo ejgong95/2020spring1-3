@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Uncomment and your base-package here:
+         <context:component-scan
+            base-package="org.springframework.samples.web"/>  -->
+
+
+	<!-- Handler mapping 객체 : 클래스만 선언 -->
+	<!-- SimpleUrlHandlerMapping=>ControllerClassNameHandlerMapping -->
+	<bean 
+	class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
+	</bean>
+	
+	<!-- 종속객체들이 들어가 있는 패키지 선언 -->
+	<context:component-scan base-package="controller, dao, logic">	
+	</context:component-scan>
+	
+    <mvc:annotation-driven />
+
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+	        <!-- Example: a logical view name of 'showMessage' is mapped to '/WEB-INF/jsp/showMessage.jsp' -->
+	        <property name="prefix" value="/WEB-INF/jsp/"/>
+	        <property name="suffix" value=".jsp"/>
+	</bean>
+	
+	<!-- DB관련 종속객체 -->
+	<bean id="datasource" 
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		p:driverClassName="oracle.jdbc.driver.OracleDriver"
+		p:url="jdbc:oracle:thin:@127.0.0.1:1521:ORCL"
+		p:username="kosea"
+		p:password="kosea2019a">
+	</bean>
+	<bean id="sqlSessionFactory" 
+		class="org.mybatis.spring.SqlSessionFactoryBean"
+		p:dataSource-ref="datasource"
+		p:configLocation="classpath:mybatisConfig.xml">
+	</bean>
+	<bean id="sqlSession" 
+		class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactory"/>
+	</bean>
+	
+	<!-- properties 환경설정 -->
+	<bean id="messageSource" 
+	class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>ApplicationResource</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- file업로드 종속객체 -->
+	<bean id="multipartResolver"
+	class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+	p:maxInMemorySize="5242800"
+	p:maxUploadSize="5242800"></bean>
+	
+</beans>
