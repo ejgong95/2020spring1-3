@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 목적별로 mapper를 나누어서 사용 -->
+<mapper namespace="mapper.usersMapper"> <!-- mapper와 query의 식별자를 구해야함 매퍼이름(식별자).이름(쿼리이름)-->
+					  <!-- 파일이름과 매퍼이름은 별개지만 , mapper식별자 이름은 보통 파일이름과 똑같이 만든다 -->
+	<select id="getItemList" resultType="model.Item">
+		select item_id as itemId, item_name as itemName, price, description,
+		picture_url as pictureUrl from item
+	</select>
+	
+</mapper>
+
+
+
+
